@@ -11,16 +11,19 @@ class Project {
   String name;
   String description;
   String technology;
-  ProjectStatus status;
+  ProjectStatus _status;
 
   Project({
     required this.name,
     required this.description,
     required this.technology,
-    required this.status,
-  });
+    required ProjectStatus status,
+  }): _status = status;
+
+  ProjectStatus get status => _status;
+
   String get statusLabel {
-    switch (status) {
+    switch (_status) {
       case ProjectStatus.active:
         return 'Active';
 
