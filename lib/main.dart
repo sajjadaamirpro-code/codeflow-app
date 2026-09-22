@@ -11,13 +11,17 @@ class Project {
   String name;
   String description;
   String technology;
+
   ProjectStatus _status;
+  String? githubUrl;
 
   Project({
     required this.name,
     required this.description,
     required this.technology,
+
     required ProjectStatus status,
+    this.githubUrl,
   }): _status = status;
 
   ProjectStatus get status => _status;
@@ -63,6 +67,7 @@ class _CodeFlowAppState extends State<CodeFlowApp> {
       description: 'Developer project management application',
       technology: 'Flutter',
       status: ProjectStatus.active,
+      githubUrl: 'https://github.com/...',
     ),
     Project(
       name: 'Weather App',
@@ -75,6 +80,7 @@ class _CodeFlowAppState extends State<CodeFlowApp> {
       description: 'Shopping application with Firebase',
       technology: 'Flutter',
       status: ProjectStatus.planning,
+      githubUrl: 'https://github.com/...',
     ),
   ];
 
@@ -251,6 +257,8 @@ class ProjectDetailsScreen extends StatelessWidget {
             Text('Technology: ${project.technology}'),
             const SizedBox(height: 12),
             Text('Status: ${project.status.name}'),
+            const SizedBox(height: 12),
+            Text(project.githubUrl ?? 'No GitHub repository'),
             const SizedBox(height: 24),
 
             ElevatedButton(
