@@ -87,7 +87,8 @@ class _CodeFlowAppState extends State<CodeFlowApp> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController technologyController = TextEditingController();
-
+  final GlobalKey<FormState> addProjectFormKey =
+  GlobalKey<FormState>();
   final TextEditingController searchController =
   TextEditingController();
   String searchQuery = '';
@@ -218,29 +219,60 @@ class _CodeFlowAppState extends State<CodeFlowApp> {
                 builder: (context) {
                   return AlertDialog(
                     title: const Text('Add Project'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextField(
-                          controller: nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Project Name',
-                          ),
-                        ),
+                      content: Form(
+                        key: addProjectFormKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextFormField(
+                              controller: nameController,
+                              decoration: const InputDecoration(
+                                labelText: 'Project Name',
+                              ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Project name is required';
+                                }
 
-                        TextField(
-                          controller: descriptionController,
-                          decoration: const InputDecoration(
-                            labelText: 'Description',
-                          ),
-                        ),
+                                if (value.trim().length < 3) {
+                                  return 'Name must contain at least 3 characters';
+                                }
 
-                        TextField(
-                          controller: technologyController,
-                          decoration: const InputDecoration(
-                            labelText: 'Technology',
-                          ),
-                        ),
+                                return null;
+                              },
+                            ),
+
+                            TextFormField(
+                              controller: descriptionController,
+                              decoration: const InputDecoration(
+                                labelText: 'Description',
+                              ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Description is required';
+                                }
+
+                                if (value.trim().length < 10) {
+                                  return 'Description must contain at least 10 characters';
+                                }
+
+                                return null;
+                              },
+                            ),
+
+                            TextFormField(
+                              controller: technologyController,
+                              decoration: const InputDecoration(
+                                labelText: 'Technology',
+                              ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Technology is required';
+                                }
+
+                                return null;
+                              },
+                            ),
                         const SizedBox(height: 12),
 
                         DropdownButtonFormField<ProjectStatus>(
@@ -268,18 +300,19 @@ class _CodeFlowAppState extends State<CodeFlowApp> {
                         ),
                       ],
                     ),
+                      ),
                     actions: [
                       TextButton(
                         onPressed: () {
+
+                          if (!addProjectFormKey.currentState!.validate()) {
+                            return;
+                          }
                           final name = nameController.text.trim();
                           final description = descriptionController.text.trim();
                           final technology = technologyController.text.trim();
 
-                          if (name.isEmpty ||
-                              description.isEmpty ||
-                              technology.isEmpty) {
-                            return;
-                          }
+
 
                           setState(() {
                             projects.add(
