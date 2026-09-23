@@ -91,7 +91,7 @@ class _CodeFlowAppState extends State<CodeFlowApp> {
   final TextEditingController searchController =
   TextEditingController();
   String searchQuery = '';
-
+  String selectedFilter = 'All';
 
 
   ProjectStatus selectedStatus = ProjectStatus.active;
@@ -99,9 +99,15 @@ class _CodeFlowAppState extends State<CodeFlowApp> {
   @override
   Widget build(BuildContext context) {
     final filteredProjects = projects.where((project) {
-      return project.name
+      final matchesSearch = project.name
           .toLowerCase()
           .contains(searchQuery.toLowerCase());
+
+      final matchesStatus =
+          selectedFilter == 'All' ||
+              project.statusLabel == selectedFilter;
+
+      return matchesSearch && matchesStatus;
     }).toList();
 
     return Scaffold(
@@ -123,6 +129,38 @@ class _CodeFlowAppState extends State<CodeFlowApp> {
               onChanged: (value) {
                 setState(() {
                   searchQuery = value;
+                });
+              },
+            ),
+
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              value: selectedFilter,
+              decoration: const InputDecoration(
+                labelText: 'Filter by status',
+                border: OutlineInputBorder(),
+              ),
+              items: const [
+                DropdownMenuItem(
+                  value: 'All',
+                  child: Text('All'),
+                ),
+                DropdownMenuItem(
+                  value: 'Active',
+                  child: Text('Active'),
+                ),
+                DropdownMenuItem(
+                  value: 'Planning',
+                  child: Text('Planning'),
+                ),
+                DropdownMenuItem(
+                  value: 'Completed',
+                  child: Text('Completed'),
+                ),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  selectedFilter = value!;
                 });
               },
             ),
