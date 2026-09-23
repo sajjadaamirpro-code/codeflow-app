@@ -88,50 +88,92 @@ class _CodeFlowAppState extends State<CodeFlowApp> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController technologyController = TextEditingController();
 
+  final TextEditingController searchController =
+  TextEditingController();
+  String searchQuery = '';
+
+
+
   ProjectStatus selectedStatus = ProjectStatus.active;
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-        appBar: AppBar(
-          title: const Text('CodeFlow'),
-        ),
-          body: ListView.builder(
-            itemCount: projects.length,
-            itemBuilder: (context, index) {
-              final project = projects[index];
+    final filteredProjects = projects.where((project) {
+      return project.name
+          .toLowerCase()
+          .contains(searchQuery.toLowerCase());
+    }).toList();
 
-              return Card(
-                margin: const EdgeInsets.all(12),
-                child: ListTile(
-                  title: Text(project.name),
-                  subtitle: Text(
-                    '${project.technology} ••••• ${project.statusLabel}',
-                  ),
-                    onTap: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ProjectDetailsScreen(project: project),
-                        ),
-                      );
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('CodeFlow'),
+      ),
 
-                      if (result == 'delete') {
-                        setState(() {
-                          projects.removeAt(index);
-                        });
-                      } else if (result is Project) {
-                        setState(() {
-                          projects[index] = result;
-                        });
-                      }
-                    },
-                ),
-              );
-            },
-          ),
-        floatingActionButton: FloatingActionButton(
+      body: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            TextField(
+              controller: searchController,
+              decoration: const InputDecoration(
+                labelText: 'Search projects',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value;
+                });
+              },
+            ),
+
+            const SizedBox(height: 12),
+
+            Expanded(
+              child: ListView.builder(
+                itemCount: filteredProjects.length,
+                itemBuilder: (context, index) {
+                  final project = filteredProjects[index];
+
+                  return Card(
+                    margin: const EdgeInsets.all(12),
+                    child: ListTile(
+                      title: Text(project.name),
+                      subtitle: Text(
+                        '${project.technology} ••••• ${project.statusLabel}',
+                      ),
+                      onTap: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ProjectDetailsScreen(project: project),
+                          ),
+                        );
+
+                        if (result == 'delete') {
+                          setState(() {
+                            projects.remove(project);
+                          });
+                        } else if (result is Project) {
+                          setState(() {
+                            final originalIndex =
+                            projects.indexOf(project);
+
+                            projects[originalIndex] = result;
+                          });
+                        }
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ], // closes children: [
+        ), // closes Column
+      ), // closes Padding
+
+      floatingActionButton: FloatingActionButton(
             onPressed: () {
               showDialog(
                 context: context,
