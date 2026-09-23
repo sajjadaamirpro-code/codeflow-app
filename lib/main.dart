@@ -7,6 +7,18 @@ enum ProjectStatus {
   completed,
 }
 
+
+class Task {
+  String title;
+  bool isCompleted;
+
+  Task({
+    required this.title,
+    this.isCompleted = false,
+  });
+}
+
+
 class Project {
   String name;
   String description;
@@ -14,7 +26,7 @@ class Project {
 
   ProjectStatus _status;
   String? githubUrl;
-
+  List<Task> tasks;
   Project({
     required this.name,
     required this.description,
@@ -22,7 +34,8 @@ class Project {
 
     required ProjectStatus status,
     this.githubUrl,
-  }): _status = status;
+    List<Task>? tasks,
+  }): _status = status, tasks = tasks ?? [];
 
   ProjectStatus get status => _status;
 
@@ -68,6 +81,10 @@ class _CodeFlowAppState extends State<CodeFlowApp> {
       technology: 'Flutter',
       status: ProjectStatus.active,
       githubUrl: 'https://github.com/...',
+      tasks: [
+        Task(title: 'Add search'),
+        Task(title: 'Add filters'),
+      ],
     ),
     Project(
       name: 'Weather App',
@@ -373,6 +390,14 @@ class ProjectDetailsScreen extends StatelessWidget {
             const SizedBox(height: 12),
             Text(project.githubUrl ?? 'No GitHub repository'),
             const SizedBox(height: 24),
+
+
+
+            Text(
+              'Tasks: ${project.tasks.length}',
+            ),            const SizedBox(height: 12),
+
+            const SizedBox(height: 12),
 
             ElevatedButton(
               onPressed: () async {
